@@ -1,0 +1,8 @@
+# 本地部署笔记：含 Cloudflare 账号 ID、自有域名清单和本机路径，不入库
+# 只匹配仓库根目录，docs/DEPLOY.md 是脱敏后的公开版
+/DEPLOY.md
+
+# 构建与缓存产物
+node_modules/
+.cloudflare/
+dist/
