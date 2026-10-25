@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>小米 Logo 几何工坊</title>
+<style>
+  :root {
+    --bg: #f4f4f5;
+    --card: #ffffff;
+    --line: #e6e6e9;
+    --text: #18181b;
+    --muted: #71717a;
+    --accent: #ff6900;
+    --accent-soft: #fff1e6;
+    --accent-ink: #9a3d00;
+    --mono: ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .app { max-width: 1280px; margin: 0 auto; padding: 22px 24px 36px; }
+  header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+  h1 { font-size: 22px; margin: 0 0 5px; letter-spacing: .02em; }
+  .sub { color: var(--muted); font-size: 12.5px; font-family: var(--mono); }
+  [hidden] { display: none !important; }
+  .head-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .mode-switch { width: 236px; }
+  .mode-switch span { padding: 7px 8px; }
+  .upload-zone {
+    width: 100%; display: grid; gap: 5px; padding: 18px 14px;
+    border: 1px dashed #d4d4d8; border-radius: 12px; background: #fafafa;
+    text-align: center;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent); background: var(--accent-soft);
+  }
+  .upload-zone strong { font-size: 13px; font-weight: 600; }
+  .upload-zone span { font-size: 11.5px; color: var(--muted); }
+  .upload-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin-top: 10px; font-size: 11.5px; color: var(--muted);
+  }
+  .upload-meta span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  button.small { padding: 5px 10px; font-size: 12px; }
+  .preview.drag-over { box-shadow: inset 0 0 0 3px var(--accent); }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px; align-items: start; }
+  .stage { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+  .preview {
+    aspect-ratio: 1 / 1;
+    max-height: calc(100vh - 210px);
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background-color: #fff;
+    background-image:
+      linear-gradient(45deg, #ececef 25%, transparent 25%),
+      linear-gradient(-45deg, #ececef 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ececef 75%),
+      linear-gradient(-45deg, transparent 75%, #ececef 75%);
+    background-size: 24px 24px;
+    background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+  }
+  .preview svg { width: 100%; height: 100%; display: block; }
+  .metrics {
+    margin-top: 12px; display: grid; gap: 5px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    word-break: break-all; line-height: 1.55;
+  }
+  .panel { display: grid; gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+  .card h2 {
+    font-size: 12px; margin: 0 0 14px; letter-spacing: .12em;
+    color: var(--muted); font-weight: 600;
+  }
+  .seg { display: flex; gap: 8px; }
+  .seg label { flex: 1; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg span {
+    display: block; text-align: center; padding: 8px 10px;
+    border: 1px solid var(--line); border-radius: 10px;
+    font-size: 13px; cursor: pointer; background: #fafafa;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .seg input:checked + span {
+    border-color: var(--accent); background: var(--accent-soft);
+    color: var(--accent-ink); font-weight: 600;
+  }
+  .seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .toggles { display: grid; gap: 10px; margin-top: 14px; }
+  .toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+  .toggle input { accent-color: var(--accent); width: 16px; height: 16px; }
+  .row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 12px; margin: 13px 0; }
+  .row label { font-size: 13px; }
+  .row .val { font-family: var(--mono); font-size: 11.5px; color: var(--muted); text-align: right; }
+  input[type="range"] {
+    grid-column: 1 / -1; width: 100%; margin: 7px 0 0;
+    accent-color: var(--accent); cursor: pointer;
+  }
+  .field { margin: 14px 0 0; }
+  .field:first-of-type { margin-top: 0; }
+  .field > label { display: block; font-size: 13px; margin-bottom: 7px; }
+  select {
+    width: 100%; height: 36px; border: 1px solid var(--line); border-radius: 10px;
+    background: #fff; padding: 0 10px; font: inherit; font-size: 13px; color: var(--text);
+  }
+  .colors { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .colors.single { grid-template-columns: 1fr; }
+  .swatch { display: grid; gap: 5px; font-size: 11px; color: var(--muted); }
+  .swatch[hidden] { display: none; }
+  input[type="color"] {
+    width: 100%; height: 36px; padding: 4px; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 10px; background: #fff;
+  }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  button {
+    font: inherit; cursor: pointer; border-radius: 10px;
+    border: 1px solid var(--line); background: #fff; color: var(--text);
+    padding: 9px 14px; font-size: 13px; transition: filter .15s, background .15s;
+  }
+  button:hover { filter: brightness(.97); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.ghost { background: transparent; }
+  .hint { font-size: 11.5px; color: var(--muted); line-height: 1.7; margin: 12px 0 0; }
+  .is-disabled { opacity: .45; }
+  .is-disabled input, .is-disabled select { pointer-events: none; }
+  dialog { border: none; border-radius: 16px; padding: 16px; width: min(860px, 92vw); }
+  dialog::backdrop { background: rgba(0, 0, 0, .4); }
+  dialog textarea {
+    width: 100%; height: min(60vh, 520px); resize: vertical;
+    font-family: var(--mono); font-size: 12px; line-height: 1.5;
+    border: 1px solid var(--line); border-radius: 10px; padding: 12px;
+    background: #fafafa; color: var(--text);
+  }
+  .dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+  .dialog-head strong { font-size: 14px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 32px; z-index: 10;
+    transform: translateX(-50%) translateY(10px);
+    background: #18181b; color: #fff; padding: 10px 18px;
+    border-radius: 999px; font-size: 13px; opacity: 0; pointer-events: none;
+    transition: opacity .2s, transform .2s;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  footer { margin-top: 18px; font-size: 11.5px; color: var(--muted); line-height: 1.7; }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; }
+    .preview { max-height: none; }
+    .app { padding: 16px 14px 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>小米 Logo 几何工坊</h1>
+      <div class="sub">x³ + y³ = 1 &nbsp;·&nbsp; 一切都是几何，一切都是数字</div>
+    </div>
+    <div class="head-actions">
+      <div class="seg mode-switch">
+        <label><input type="radio" name="appmode" value="mi" data-appmode checked><span>几何 mi</span></label>
+        <label><input type="radio" name="appmode" value="upload" data-appmode><span>上传 Logo</span></label>
+      </div>
+      <button id="reset" class="ghost">恢复默认参数</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div id="preview" class="preview" aria-label="Logo 预览"></div>
+      <div id="metrics" class="metrics" aria-live="polite"></div>
+    </section>
+
+    <aside class="panel">
+      <section class="card" data-show="mi">
+        <h2>外轮廓</h2>
+        <div class="seg">
+          <label><input type="radio" name="mode" value="4" data-mode checked><span>4 段贝塞尔</span></label>
+          <label><input type="radio" name="mode" value="8" data-mode><span>8 段贝塞尔</span></label>
+        </div>
+        <div class="toggles">
+          <label class="toggle"><input type="checkbox" data-key="showGuides"> 显示控制点</label>
+          <label class="toggle"><input type="checkbox" data-key="showIdeal"> 叠加理论曲线 x³ + y³ = 1</label>
+        </div>
+        <p class="hint" id="contour-hint"></p>
+      </section>
+
+      <section class="card" data-show="mi">
+        <h2>mi 字形</h2>
+        <div class="row">
+          <label for="H">内字高度 H</label><output class="val" data-out="H" data-fmt="3"></output>
+          <input id="H" type="range" min="0.66" max="0.86" step="0.001" data-key="H">
+        </div>
+        <div class="row">
+          <label for="W1">竖笔画宽 W1</label><output class="val" data-out="W1" data-fmt="3"></output>
+          <input id="W1" type="range" min="0.14" max="0.24" step="0.001" data-key="W1">
+        </div>
+        <div class="row">
+          <label for="W2">笔画间隙 W2</label><output class="val" data-out="W2" data-fmt="3"></output>
+          <input id="W2" type="range" min="0.11" max="0.19" step="0.001" data-key="W2">
+        </div>
+        <div class="row">
+          <label for="W3">横梁厚度 W3</label><output class="val" data-out="W3" data-fmt="3"></output>
+          <input id="W3" type="range" min="0.1" max="0.22" step="0.0005" data-key="W3">
+        </div>
+        <div class="row">
+          <label for="rOuter">肩部大圆角</label><output class="val" data-out="rOuter" data-fmt="3"></output>
+          <input id="rOuter" type="range" min="0" max="0.32" step="0.002" data-key="rOuter">
+        </div>
+        <div class="row">
+          <label for="rInner">内侧肩部圆角</label><output class="val" data-out="rInner" data-fmt="3"></output>
+          <input id="rInner" type="range" min="0" max="0.2" step="0.002" data-key="rInner">
+        </div>
+        <div class="row">
+          <label for="rSmall">其他小圆角</label><output class="val" data-out="rSmall" data-fmt="4"></output>
+          <input id="rSmall" type="range" min="0" max="0.05" step="0.0005" data-key="rSmall">
+        </div>
+        <div class="field">
+          <label>肩部曲线画法</label>
+          <div class="seg">
+            <label><input type="radio" name="curve" value="arc" data-curve checked><span>圆弧</span></label>
+            <label><input type="radio" name="curve" value="bezier" data-curve><span>贝塞尔</span></label>
+          </div>
+        </div>
+        <p class="hint">参数单位 R = Logo 半宽 · 文章魔数：H ≈ 0.766R · W1 ≈ 0.188R · W2 ≈ 0.147R · W3 ≈ 1.1 W2 · 小圆角 ≈ R/80</p>
+      </section>
+
+      <section class="card" data-show="upload">
+        <h2>底板</h2>
+        <div class="seg">
+          <label><input type="radio" name="baseshape" value="squircle" data-baseshape checked><span>超椭圆</span></label>
+          <label><input type="radio" name="baseshape" value="rounded" data-baseshape><span>圆角矩形</span></label>
+        </div>
+        <div class="row" id="corner-row">
+          <label for="cornerPct">圆角半径</label><output class="val" data-out="cornerPct" data-fmt="0" data-suffix="%"></output>
+          <input id="cornerPct" type="range" min="0" max="50" step="1" data-key="cornerPct">
+        </div>
+        <p class="hint">超椭圆沿用文章的 x³ + y³ = 1；圆角矩形拉到 50% 即为圆形。</p>
+      </section>
+
+      <section class="card" data-show="upload">
+        <h2>上传 Logo</h2>
+        <input id="logo-file" type="file" accept="image/svg+xml,image/png,image/jpeg,image/webp" hidden>
+        <button id="pick-logo" class="upload-zone" type="button">
+          <strong>选择文件</strong>
+          <span>或把 SVG / PNG / JPG / WebP 拖到这里</span>
+        </button>
+        <div class="upload-meta" id="logo-meta" hidden>
+          <span id="logo-name"></span>
+          <button id="remove-logo" class="ghost small" type="button">移除</button>
+        </div>
+        <div class="row">
+          <label for="logoSize">Logo 大小</label><output class="val" data-out="logoSize" data-fmt="0" data-suffix="%"></output>
+          <input id="logoSize" type="range" min="30" max="95" step="1" data-key="logoSize">
+        </div>
+        <div class="row">
+          <label for="logoX">水平偏移</label><output class="val" data-out="logoX" data-fmt="0" data-suffix="%"></output>
+          <input id="logoX" type="range" min="-20" max="20" step="1" data-key="logoX">
+        </div>
+        <div class="row">
+          <label for="logoY">垂直偏移</label><output class="val" data-out="logoY" data-fmt="0" data-suffix="%"></output>
+          <input id="logoY" type="range" min="-20" max="20" step="1" data-key="logoY">
+        </div>
+        <p class="hint">推荐透明背景 PNG/SVG；JPG 的白底会保留。图片会裁剪在底板内部。</p>
+      </section>
+
+      <section class="card">
+        <h2>填充</h2>
+        <div class="seg" data-show="mi">
+          <label><input type="radio" name="fillmode" value="solid" data-hollow="0" checked><span>实心</span></label>
+          <label><input type="radio" name="fillmode" value="hollow" data-hollow="1"><span>镂空</span></label>
+        </div>
+        <div class="field">
+          <label for="bgType" id="bg-label">背景（外轮廓）</label>
+          <select id="bgType" data-fill="bg" data-prop="type">
+            <option value="solid">纯色</option>
+            <option value="gradient">线性渐变</option>
+            <option value="checker">棋盘格</option>
+            <option value="stripes">斜条纹</option>
+            <option value="dots">波点</option>
+            <option value="carbon">碳纤维</option>
+          </select>
+          <div class="colors" data-colors="bg">
+            <label class="swatch">主色<input type="color" data-fill="bg" data-prop="a" aria-label="背景主色"></label>
+            <label class="swatch">辅色<input type="color" data-fill="bg" data-prop="b" aria-label="背景辅色"></label>
+          </div>
+        </div>
+        <div class="field" id="fg-card" data-show="mi">
+          <label for="fgType">前景（mi）</label>
+          <select id="fgType" data-fill="fg" data-prop="type">
+            <option value="solid">纯色</option>
+            <option value="gradient">线性渐变</option>
+            <option value="checker">棋盘格</option>
+            <option value="stripes">斜条纹</option>
+            <option value="dots">波点</option>
+            <option value="carbon">碳纤维</option>
+          </select>
+          <div class="colors" data-colors="fg">
+            <label class="swatch">主色<input type="color" data-fill="fg" data-prop="a" aria-label="前景主色"></label>
+            <label class="swatch">辅色<input type="color" data-fill="fg" data-prop="b" aria-label="前景辅色"></label>
+          </div>
+        </div>
+        <p class="hint" id="hollow-hint" hidden>镂空模式：mi 变为透明挖空，露出页面背景。</p>
+      </section>
+
+      <section class="card">
+        <h2>导出</h2>
+        <div class="field">
+          <label for="exportSize">尺寸</label>
+          <select id="exportSize" data-key="exportSize">
+            <option value="512">512 × 512</option>
+            <option value="1024" selected>1024 × 1024</option>
+            <option value="2048">2048 × 2048</option>
+          </select>
+        </div>
+        <div class="actions" style="margin-top:14px">
+          <button id="dl-svg" class="primary">下载 SVG</button>
+          <button id="dl-png">下载 PNG</button>
+          <button id="view-svg" class="ghost">查看源码</button>
+        </div>
+        <p class="hint">导出为透明背景，可直接用于设计稿或网页。</p>
+      </section>
+    </aside>
+  </div>
+
+  <footer>
+    几何参数依据知乎文章《<a href="https://zhuanlan.zhihu.com/p/2075353168960139652" target="_blank" rel="noreferrer">如何画出小米的logo</a>》整理 · 仅用于几何学习与设计练习，小米商标归小米公司所有。
+  </footer>
+</div>
+
+<dialog id="source-dialog">
+  <div class="dialog-head">
+    <strong>SVG 源码</strong>
+    <div class="actions">
+      <button id="copy-svg">复制</button>
+      <button class="ghost" data-close-dialog>关闭</button>
+    </div>
+  </div>
+  <textarea id="source-text" readonly spellcheck="false"></textarea>
+</dialog>
+<div id="toast" class="toast" role="status"></div>
+
+<script>
+(() => {
+  const VB = 1000;
+  const CENTER = 500;
+  const SCALE = 470;
+
+  // 4 段近似：P1=(k,1)、P2=(1,k)，令 t=1/2 处落在 x³+y³=1 上 ⇒ k=(8∛½−4)/3
+  const K4 = (8 * Math.cbrt(0.5) - 4) / 3;
+  // 8 段近似：在中点 (C,C) 处拆分，a、b 为文章给出的最小二乘解
+  const C8 = Math.cbrt(0.5);
+  const S45 = Math.SQRT1_2;
+  const A8 = 0.260244268;
+  const B8 = 0.295985175;
+
+  const defaults = {
+    appMode: "mi",
+    mode: "4",
+    curveStyle: "arc",
+    showGuides: false,
+    showIdeal: false,
+    H: 0.766,
+    W1: 0.188,
+    W2: 0.147,
+    W3: 0.1617,
+    rOuter: 0.2,
+    rInner: 0.08,
+    rSmall: 0.0125,
+    hollow: false,
+    bg: { type: "solid", a: "#ff6900", b: "#ffb066" },
+    fg: { type: "solid", a: "#ffffff", b: "#ffd9b8" },
+    baseShape: "squircle",
+    cornerPct: 22,
+    logoSize: 62,
+    logoX: 0,
+    logoY: 0,
+    exportSize: "1024",
+  };
+
+  const state = structuredClone(defaults);
+  state.upload = { dataUrl: "", name: "" };
+
+  const preview = document.getElementById("preview");
+  const metrics = document.getElementById("metrics");
+  const fgCard = document.getElementById("fg-card");
+  const hollowHint = document.getElementById("hollow-hint");
+  const contourHint = document.getElementById("contour-hint");
+  const toastEl = document.getElementById("toast");
+  let toastTimer = 0;
+
+  /* ---------- 几何 ---------- */
+
+  function rotatePoint(point, quadrant) {
+    let x = point[0];
+    let y = point[1];
+    for (let i = 0; i < quadrant; i++) {
+      const nx = y;
+      const ny = -x;
+      x = nx;
+      y = ny;
+    }
+    return [x, y];
+  }
+
+  function quadrantSegments() {
+    if (state.mode === "4") {
+      return [[[0, 1], [K4, 1], [1, K4], [1, 0]]];
+    }
+    return [
+      [[0, 1], [A8, 1], [C8 - S45 * B8, C8 + S45 * B8], [C8, C8]],
+      [[C8, C8], [C8 + S45 * B8, C8 - S45 * B8], [1, A8], [1, 0]],
+    ];
+  }
+
+  const sx = (x) => +(CENTER + x * SCALE).toFixed(2);
+  const sy = (y) => +(CENTER - y * SCALE).toFixed(2);
+
+  function outerPath() {
+    const segments = quadrantSegments();
+    let d = "";
+    let started = false;
+    for (let q = 0; q < 4; q++) {
+      for (const segment of segments) {
+        const points = segment.map((point) => rotatePoint(point, q));
+        if (!started) {
+          d += `M ${sx(points[0][0])} ${sy(points[0][1])} `;
+          started = true;
+        }
+        d += `C ${sx(points[1][0])} ${sy(points[1][1])} ${sx(points[2][0])} ${sy(points[2][1])} ${sx(points[3][0])} ${sy(points[3][1])} `;
+      }
+    }
+    return d + "Z";
+  }
+
+  function circlePath() {
+    const c = 0.5522847498;
+    return `M ${sx(0)} ${sy(1)} C ${sx(c)} ${sy(1)} ${sx(1)} ${sy(c)} ${sx(1)} ${sy(0)} C ${sx(1)} ${sy(-c)} ${sx(c)} ${sy(-1)} ${sx(0)} ${sy(-1)} C ${sx(-c)} ${sy(-1)} ${sx(-1)} ${sy(-c)} ${sx(-1)} ${sy(0)} C ${sx(-1)} ${sy(c)} ${sx(-c)} ${sy(1)} ${sx(0)} ${sy(1)} Z`;
+  }
+
+  function basePath() {
+    if (state.appMode === "upload" && state.baseShape === "rounded") {
+      if (state.cornerPct >= 50) return circlePath();
+      const radius = (state.cornerPct / 100) * 2;
+      return pathData(
+        roundedPolygon(
+          [[-1, -1], [-1, 1], [1, 1], [1, -1]],
+          [radius, radius, radius, radius],
+          0.5522847498
+        )
+      );
+    }
+    return outerPath();
+  }
+
+  function bezierPoint(segment, t) {
+    const u = 1 - t;
+    const b0 = u * u * u;
+    const b1 = 3 * u * u * t;
+    const b2 = 3 * u * t * t;
+    const b3 = t * t * t;
+    return [
+      b0 * segment[0][0] + b1 * segment[1][0] + b2 * segment[2][0] + b3 * segment[3][0],
+      b0 * segment[0][1] + b1 * segment[1][1] + b2 * segment[2][1] + b3 * segment[3][1],
+    ];
+  }
+
+  function maxResidual() {
+    let worst = 0;
+    for (const segment of quadrantSegments()) {
+      for (let i = 0; i <= 240; i++) {
+        const [x, y] = bezierPoint(segment, i / 240);
+        worst = Math.max(worst, Math.abs(x ** 3 + y ** 3 - 1));
+      }
+    }
+    return worst;
+  }
+
+  function roundedPolygon(points, radii, curve) {
+    const n = points.length;
+    const r = radii.slice();
+
+    // 同一条边上两个圆角不能吃满整条边，按比例收缩
+    for (let pass = 0; pass < 2; pass++) {
+      for (let i = 0; i < n; i++) {
+        const j = (i + 1) % n;
+        const edge = Math.hypot(points[j][0] - points[i][0], points[j][1] - points[i][1]);
+        const sum = r[i] + r[j];
+        if (sum > edge * 0.98 && sum > 0) {
+          const factor = (edge * 0.98) / sum;
+          r[i] *= factor;
+          r[j] *= factor;
+        }
+      }
+    }
+
+    const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+    const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
+    const mul = (a, s) => [a[0] * s, a[1] * s];
+    const unit = (a) => {
+      const length = Math.hypot(a[0], a[1]) || 1;
+      return [a[0] / length, a[1] / length];
+    };
+
+    const commands = [];
+    for (let i = 0; i < n; i++) {
+      const prev = points[(i - 1 + n) % n];
+      const corner = points[i];
+      const next = points[(i + 1) % n];
+      const inDir = unit(sub(corner, prev));
+      const outDir = unit(sub(next, corner));
+      const radius = r[i];
+      const start = add(corner, mul(inDir, -radius));
+      const end = add(corner, mul(outDir, radius));
+      commands.push([i === 0 ? "M" : "L", start]);
+      if (radius > 1e-9) {
+        const c1 = add(start, mul(inDir, radius * curve));
+        const c2 = add(end, mul(outDir, -radius * curve));
+        commands.push(["C", c1, c2, end]);
+      }
+    }
+    commands.push(["Z"]);
+    return commands;
+  }
+
+  function pathData(commands) {
+    return commands
+      .map((command) => {
+        if (command[0] === "Z") return "Z";
+        const points = command.slice(1).map((point) => `${sx(point[0])} ${sy(point[1])}`);
+        return `${command[0]} ${points.join(" ")}`;
+      })
+      .join(" ");
+  }
+
+  function miPaths() {
+    const { H, W1, W2, W3, rSmall, rOuter, rInner } = state;
+    const curve = state.curveStyle === "arc" ? 0.5522847498 : 0.72;
+    const totalWidth = 4 * W1 + 3 * W2;
+    const mWidth = 3 * W1 + 2 * W2;
+    const shift = ([x, y]) => [x - totalWidth / 2, y - H / 2];
+
+    const mPoints = [
+      [0, 0],
+      [0, H],
+      [mWidth, H],
+      [mWidth, 0],
+      [2 * W1 + 2 * W2, 0],
+      [2 * W1 + 2 * W2, H - W3],
+      [W1, H - W3],
+      [W1, 0],
+    ].map(shift);
+    const mRadii = [rSmall, rSmall, rOuter, rSmall, rSmall, rInner, rSmall, rSmall];
+
+    const stemX = W1 + W2;
+    const stemHeight = H - W3 - W2;
+    const stem = [
+      [stemX, 0],
+      [stemX, stemHeight],
+      [stemX + W1, stemHeight],
+      [stemX + W1, 0],
+    ].map(shift);
+
+    const iX = 3 * W1 + 3 * W2;
+    const i = [
+      [iX, 0],
+      [iX, H],
+      [totalWidth, H],
+      [totalWidth, 0],
+    ].map(shift);
+
+    return [
+      roundedPolygon(mPoints, mRadii, curve),
+      roundedPolygon(stem, [rSmall * 2, rSmall * 2, rSmall * 2, rSmall * 2], curve),
+      roundedPolygon(i, [rSmall, rSmall, rSmall, rSmall], curve),
+    ].map(pathData);
+  }
+
+  function uploadImageLayer() {
+    const side = (state.logoSize / 100) * 2;
+    const centerX = (state.logoX / 100) * 2;
+    const centerY = -(state.logoY / 100) * 2;
+    const left = -side / 2 + centerX;
+    const bottom = -side / 2 + centerY;
+    return `<g clip-path="url(#base-clip)"><image href="${state.upload.dataUrl}" x="${sx(left)}" y="${sy(bottom + side)}" width="${side * SCALE}" height="${side * SCALE}" preserveAspectRatio="xMidYMid meet"/></g>`;
+  }
+
+  /* ---------- 填充 ---------- */
+
+  const PATTERN_CELL = { checker: 56, stripes: 44, dots: 64, carbon: 20 };
+
+  function fillDefs(prefix, fill) {
+    if (fill.type === "solid") {
+      return { defs: "", value: fill.a };
+    }
+    if (fill.type === "gradient") {
+      return {
+        defs: `<linearGradient id="${prefix}-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${fill.a}"/><stop offset="1" stop-color="${fill.b}"/></linearGradient>`,
+        value: `url(#${prefix}-grad)`,
+      };
+    }
+    const cell = PATTERN_CELL[fill.type];
+    const bodies = {
+      checker: `<rect width="${cell}" height="${cell}" fill="${fill.a}"/><rect width="${cell / 2}" height="${cell / 2}" fill="${fill.b}"/><rect x="${cell / 2}" y="${cell / 2}" width="${cell / 2}" height="${cell / 2}" fill="${fill.b}"/>`,
+      stripes: `<rect width="${cell}" height="${cell}" fill="${fill.a}"/><rect x="${cell / 2}" width="${cell / 2}" height="${cell}" fill="${fill.b}"/>`,
+      dots: `<rect width="${cell}" height="${cell}" fill="${fill.a}"/><circle cx="${cell / 2}" cy="${cell / 2}" r="12" fill="${fill.b}"/>`,
+      carbon: `<rect width="${cell}" height="${cell}" fill="${fill.a}"/><rect width="${cell / 2}" height="${cell / 2}" fill="${fill.b}"/><rect x="${cell / 2}" y="${cell / 2}" width="${cell / 2}" height="${cell / 2}" fill="${fill.b}"/>`,
+    };
+    const rotate = fill.type === "stripes" || fill.type === "carbon" ? ' patternTransform="rotate(45)"' : "";
+    return {
+      defs: `<pattern id="${prefix}-pat" width="${cell}" height="${cell}" patternUnits="userSpaceOnUse"${rotate}>${bodies[fill.type]}</pattern>`,
+      value: `url(#${prefix}-pat)`,
+    };
+  }
+
+  /* ---------- 组装 SVG ---------- */
+
+  function guideLayer() {
+    if (state.appMode === "upload") {
+      if (state.upload.dataUrl) return "";
+      return `<g opacity="0.6"><rect x="${sx(-0.62)}" y="${sy(0.62)}" width="${1.24 * SCALE}" height="${1.24 * SCALE}" rx="16" fill="none" stroke="#71717a" stroke-width="3" stroke-dasharray="10 10"/><text x="${sx(0)}" y="${sy(0)}" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, sans-serif" font-size="26" fill="#71717a">上传你的 Logo</text></g>`;
+    }
+    let markup = "";
+    if (state.showIdeal) {
+      const points = [];
+      for (let i = 0; i <= 720; i++) {
+        const theta = (i / 720) * Math.PI * 2;
+        const cos = Math.cos(theta);
+        const sin = Math.sin(theta);
+        const x = Math.sign(cos) * Math.abs(cos) ** (2 / 3);
+        const y = Math.sign(sin) * Math.abs(sin) ** (2 / 3);
+        points.push(`${sx(x)},${sy(y)}`);
+      }
+      markup += `<polyline points="${points.join(" ")}" fill="none" stroke="#0a84ff" stroke-width="3" stroke-dasharray="10 8" opacity="0.9"/>`;
+    }
+    if (state.showGuides) {
+      const segments = quadrantSegments();
+      for (let q = 0; q < 4; q++) {
+        for (const segment of segments) {
+          const points = segment.map((point) => rotatePoint(point, q));
+          const polyline = points.map((point) => `${sx(point[0])},${sy(point[1])}`).join(" ");
+          markup += `<polyline points="${polyline}" fill="none" stroke="#0a84ff" stroke-width="2" opacity="0.45"/>`;
+          for (const point of points) {
+            markup += `<circle cx="${sx(point[0])}" cy="${sy(point[1])}" r="5" fill="#0a84ff" opacity="0.7"/>`;
+          }
+        }
+      }
+    }
+    return markup;
+  }
+
+  function buildSVG({ size = VB, preview: isPreview = false } = {}) {
+    const uploadMode = state.appMode === "upload";
+    const hollow = !uploadMode && state.hollow;
+    const base = basePath();
+    const bg = fillDefs("bg", state.bg);
+    const fg = uploadMode || hollow ? { defs: "", value: "none" } : fillDefs("fg", state.fg);
+    const mi = uploadMode ? [] : miPaths();
+
+    const maskDef = hollow
+      ? `<mask id="mi-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="${VB}" height="${VB}"><rect x="0" y="0" width="${VB}" height="${VB}" fill="#fff"/><g fill="#000">${mi.map((d) => `<path d="${d}"/>`).join("")}</g></mask>`
+      : "";
+    const clipDef = uploadMode ? `<clipPath id="base-clip"><path d="${base}"/></clipPath>` : "";
+
+    let shapes = "";
+    if (uploadMode) {
+      shapes = `<path d="${base}" fill="${bg.value}"/>`;
+      if (state.upload.dataUrl) shapes += uploadImageLayer();
+    } else if (hollow) {
+      shapes = `<path d="${base}" fill="${bg.value}" mask="url(#mi-cut)"/>`;
+    } else {
+      shapes = `<path d="${base}" fill="${bg.value}"/><g fill="${fg.value}">${mi.map((d) => `<path d="${d}"/>`).join("")}</g>`;
+    }
+
+    const guides = isPreview ? guideLayer() : "";
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VB} ${VB}" width="${size}" height="${size}" role="img" aria-label="小米风格几何 Logo">
+<defs>${bg.defs}${fg.defs}${maskDef}${clipDef}</defs>
+${shapes}
+${guides}</svg>`;
+  }
+
+  /* ---------- 读数与提示 ---------- */
+
+  function superscript(value) {
+    const digits = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+    return String(value)
+      .replace("-", "⁻")
+      .replace(/[0-9]/g, (digit) => digits[Number(digit)]);
+  }
+
+  function sci(value) {
+    if (value === 0) return "0";
+    const exponent = Math.floor(Math.log10(Math.abs(value)));
+    const mantissa = value / 10 ** exponent;
+    return `${mantissa.toFixed(2)}×10${superscript(exponent)}`;
+  }
+
+  function updateMetrics() {
+    if (state.appMode === "upload") {
+      const base = state.baseShape === "rounded"
+        ? `圆角矩形 · 圆角 ${state.cornerPct}%`
+        : "超椭圆 · 4 段近似";
+      const logo = state.upload.dataUrl
+        ? `Logo · ${state.logoSize}% 宽 · 偏移 ${state.logoX}% / ${state.logoY}%`
+        : "Logo · 尚未上传";
+      metrics.innerHTML = `<div>底板 · ${base}</div><div>${logo}</div>`;
+      return;
+    }
+    const residual = maxResidual();
+    const contour = state.mode === "4"
+      ? `4 段 · k = ${K4.toFixed(12)} · 最大残差 ${sci(residual)}`
+      : `8 段 · a = ${A8.toFixed(9)} · b = ${B8.toFixed(9)} · C = ${C8.toFixed(9)} · 最大残差 ${sci(residual)}`;
+    const width = 4 * state.W1 + 3 * state.W2;
+    metrics.innerHTML = [
+      `<div>轮廓 · ${contour}</div>`,
+      `<div>mi · W = ${width.toFixed(3)}R · H = ${state.H.toFixed(3)}R · 肩部 ${state.rOuter.toFixed(3)}R / ${state.rInner.toFixed(3)}R · 小圆角 ${state.rSmall.toFixed(4)}R</div>`,
+    ].join("");
+    contourHint.textContent = state.mode === "4"
+      ? "每象限一段三次贝塞尔，t = 1/2 处与理想曲线精确重合。"
+      : "每象限在 (C, C) 处一分为二，a、b 是文章用最小二乘拟合出的控制点参数。";
+  }
+
+  /* ---------- 控件同步 ---------- */
+
+  function syncControls() {
+    document.querySelectorAll("[data-key]").forEach((el) => {
+      const value = state[el.dataset.key];
+      if (el.type === "checkbox") el.checked = Boolean(value);
+      else el.value = value;
+    });
+    document.querySelectorAll("output[data-out]").forEach((output) => {
+      const value = state[output.dataset.out];
+      const suffix = output.dataset.suffix || " R";
+      output.textContent = `${Number(value).toFixed(Number(output.dataset.fmt || 3))}${suffix}`;
+    });
+    document.querySelectorAll("input[data-appmode]").forEach((el) => {
+      el.checked = el.value === state.appMode;
+    });
+    document.querySelectorAll("input[data-baseshape]").forEach((el) => {
+      el.checked = el.value === state.baseShape;
+    });
+    document.querySelectorAll("[data-show]").forEach((el) => {
+      el.hidden = el.dataset.show !== state.appMode;
+    });
+    document.getElementById("corner-row").hidden = state.baseShape !== "rounded";
+    document.getElementById("bg-label").textContent = state.appMode === "upload" ? "背景（底板）" : "背景（外轮廓）";
+    const hasLogo = Boolean(state.upload.dataUrl);
+    document.getElementById("logo-meta").hidden = !hasLogo;
+    document.getElementById("logo-name").textContent = hasLogo ? state.upload.name : "";
+    document.querySelectorAll("input[data-mode]").forEach((el) => {
+      el.checked = el.value === state.mode;
+    });
+    document.querySelectorAll("input[data-curve]").forEach((el) => {
+      el.checked = el.value === state.curveStyle;
+    });
+    document.querySelectorAll("input[data-hollow]").forEach((el) => {
+      el.checked = (el.dataset.hollow === "1") === state.hollow;
+    });
+    document.querySelectorAll("[data-fill]").forEach((el) => {
+      el.value = state[el.dataset.fill][el.dataset.prop];
+    });
+    ["bg", "fg"].forEach((key) => {
+      const solid = state[key].type === "solid";
+      const container = document.querySelector(`[data-colors="${key}"]`);
+      container.classList.toggle("single", solid);
+      container.querySelectorAll(".swatch")[1].hidden = solid;
+    });
+    document.querySelectorAll('[data-fill="fg"]').forEach((el) => {
+      el.disabled = state.hollow;
+    });
+    fgCard.classList.toggle("is-disabled", state.hollow);
+    hollowHint.hidden = !state.hollow;
+  }
+
+  function render() {
+    syncControls();
+    preview.innerHTML = buildSVG({ preview: true });
+    updateMetrics();
+  }
+
+  /* ---------- 事件 ---------- */
+
+  document.querySelectorAll("[data-key]").forEach((el) => {
+    el.addEventListener("input", () => {
+      const key = el.dataset.key;
+      if (el.type === "checkbox") state[key] = el.checked;
+      else if (el.type === "range") state[key] = Number(el.value);
+      else state[key] = el.value;
+      render();
+    });
+  });
+
+  document.querySelectorAll("input[data-mode]").forEach((el) => {
+    el.addEventListener("change", () => {
+      state.mode = el.value;
+      render();
+    });
+  });
+
+  document.querySelectorAll("input[data-appmode]").forEach((el) => {
+    el.addEventListener("change", () => {
+      state.appMode = el.value;
+      render();
+    });
+  });
+
+  document.querySelectorAll("input[data-baseshape]").forEach((el) => {
+    el.addEventListener("change", () => {
+      state.baseShape = el.value;
+      render();
+    });
+  });
+
+  document.querySelectorAll("input[data-curve]").forEach((el) => {
+    el.addEventListener("change", () => {
+      state.curveStyle = el.value;
+      render();
+    });
+  });
+
+  document.querySelectorAll("input[data-hollow]").forEach((el) => {
+    el.addEventListener("change", () => {
+      state.hollow = el.dataset.hollow === "1";
+      render();
+    });
+  });
+
+  document.querySelectorAll("[data-fill]").forEach((el) => {
+    el.addEventListener("input", () => {
+      state[el.dataset.fill][el.dataset.prop] = el.value;
+      render();
+    });
+  });
+
+  document.getElementById("reset").addEventListener("click", () => {
+    const upload = state.upload;
+    Object.assign(state, structuredClone(defaults));
+    state.upload = upload;
+    render();
+  });
+
+  /* ---------- 上传 ---------- */
+
+  const fileInput = document.getElementById("logo-file");
+
+  function loadLogoFile(file) {
+    if (!file) return;
+    const looksLikeImage = file.type.startsWith("image/") || /\.(svg|png|jpe?g|webp)$/i.test(file.name);
+    if (!looksLikeImage) {
+      toast("请选择图片文件（SVG / PNG / JPG / WebP）");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      state.upload = { dataUrl: String(reader.result), name: file.name };
+      state.appMode = "upload";
+      render();
+      toast("Logo 已载入");
+    };
+    reader.onerror = () => toast("读取文件失败");
+    reader.readAsDataURL(file);
+  }
+
+  document.getElementById("pick-logo").addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", () => {
+    loadLogoFile(fileInput.files[0]);
+    fileInput.value = "";
+  });
+
+  document.getElementById("remove-logo").addEventListener("click", () => {
+    state.upload = { dataUrl: "", name: "" };
+    render();
+  });
+
+  function wireDrop(zone) {
+    ["dragenter", "dragover"].forEach((type) => {
+      zone.addEventListener(type, (event) => {
+        event.preventDefault();
+        zone.classList.add("drag-over");
+      });
+    });
+    ["dragleave", "drop"].forEach((type) => {
+      zone.addEventListener(type, (event) => {
+        event.preventDefault();
+        zone.classList.remove("drag-over");
+      });
+    });
+    zone.addEventListener("drop", (event) => {
+      loadLogoFile(event.dataTransfer.files[0]);
+    });
+  }
+  wireDrop(preview);
+  wireDrop(document.getElementById("pick-logo"));
+
+  /* ---------- 导出 ---------- */
+
+  function toast(message) {
+    toastEl.textContent = message;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1800);
+  }
+
+  function download(name, blob) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  document.getElementById("dl-svg").addEventListener("click", () => {
+    const svg = buildSVG({ size: Number(state.exportSize) });
+    download("xiaomi-logo.svg", new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
+    toast("SVG 已导出");
+  });
+
+  document.getElementById("dl-png").addEventListener("click", () => {
+    const size = Number(state.exportSize);
+    const svg = buildSVG({ size });
+    const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
+    const image = new Image();
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const context = canvas.getContext("2d");
+      context.drawImage(image, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          toast("PNG 生成失败，请改用 SVG");
+          return;
+        }
+        download(`xiaomi-logo-${size}.png`, blob);
+        toast("PNG 已导出");
+      }, "image/png");
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      toast("PNG 生成失败，请改用 SVG");
+    };
+    image.src = url;
+  });
+
+  const sourceDialog = document.getElementById("source-dialog");
+  const sourceText = document.getElementById("source-text");
+
+  document.getElementById("view-svg").addEventListener("click", () => {
+    sourceText.value = buildSVG({ size: Number(state.exportSize) });
+    sourceDialog.showModal();
+  });
+
+  document.querySelector("[data-close-dialog]").addEventListener("click", () => {
+    sourceDialog.close();
+  });
+
+  document.getElementById("copy-svg").addEventListener("click", async () => {
+    sourceText.focus();
+    sourceText.select();
+    try {
+      await navigator.clipboard.writeText(sourceText.value);
+      toast("SVG 源码已复制");
+    } catch {
+      toast("已选中源码，请按 Ctrl+C 复制");
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
