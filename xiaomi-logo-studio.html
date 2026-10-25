@@ -4,39 +4,77 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>小米 Logo 几何工坊 · x³+y³=1 超椭圆参数工具</title>
-<meta name="description" content="用 x³+y³=1 超椭圆与三次贝塞尔拟合还原小米 Logo 的几何参数，在线调节 mi 字形、肩部圆角、镂空与纹理填充并导出 SVG / PNG，也可上传自己的 Logo 生成圆角底板图标。">
-<link rel="canonical" href="https://logo.aiwz.de/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#ff6900">
 <meta property="og:type" content="website">
+<!-- i18n:head:start -->
+<title>小米 Logo 几何工坊 · x³+y³=1 超椭圆参数工具</title>
+<meta name="description" content="免费在线超椭圆（squircle）生成器：用 x³+y³=1 与三次贝塞尔拟合还原小米 Logo 的几何参数，实时调节 mi 字形、肩部圆角、镂空与纹理填充，一键导出透明背景 SVG / PNG，也能上传自己的 Logo 生成圆角底板图标。">
+<link rel="canonical" href="https://logo.aiwz.de/">
+<link rel="alternate" hreflang="zh-Hans" href="https://logo.aiwz.de/">
+<link rel="alternate" hreflang="en" href="https://logo.aiwz.de/en/">
+<link rel="alternate" hreflang="ja" href="https://logo.aiwz.de/ja/">
+<link rel="alternate" hreflang="de" href="https://logo.aiwz.de/de/">
+<link rel="alternate" hreflang="nl" href="https://logo.aiwz.de/nl/">
+<link rel="alternate" hreflang="x-default" href="https://logo.aiwz.de/en/">
 <meta property="og:site_name" content="小米 Logo 几何工坊">
 <meta property="og:title" content="小米 Logo 几何工坊 · x³+y³=1 超椭圆参数工具">
 <meta property="og:description" content="调节超椭圆近似、mi 字形与圆角参数，实时预览并导出 SVG / PNG，支持上传自己的 Logo 生成圆角底板。">
 <meta property="og:url" content="https://logo.aiwz.de/">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="小米 Logo 几何工坊">
+<meta property="og:image" content="https://logo.aiwz.de/og-zh.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="橙色超椭圆底板与 mi 字形参数面板">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="小米 Logo 几何工坊 · x³+y³=1 超椭圆参数工具">
 <meta name="twitter:description" content="一切都是几何，一切都是数字：小米 Logo 的超椭圆与贝塞尔参数化工具。">
+<meta name="twitter:image" content="https://logo.aiwz.de/og-zh.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "小米 Logo 几何工坊",
-  "url": "https://logo.aiwz.de/",
-  "applicationCategory": "DesignApplication",
-  "operatingSystem": "Any",
-  "inLanguage": "zh-CN",
-  "isAccessibleForFree": true,
-  "description": "用 x³+y³=1 超椭圆与三次贝塞尔拟合还原小米 Logo 的几何参数，支持参数调节、镂空纹理填充、上传自定义 Logo 与 SVG/PNG 导出。",
-  "featureList": [
-    "4 段与 8 段贝塞尔超椭圆近似",
-    "mi 字形与肩部圆角参数调节",
-    "镂空与渐变、棋盘、斜纹、波点、碳纤维纹理填充",
-    "SVG 与 PNG 导出",
-    "上传 Logo 生成超椭圆或圆角矩形底板"
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "小米 Logo 几何工坊",
+      "url": "https://logo.aiwz.de/",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Web browser",
+      "inLanguage": "zh-CN",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "用 x³+y³=1 超椭圆与三次贝塞尔拟合还原小米 Logo 的几何参数，支持参数调节、镂空纹理填充、上传自定义 Logo 与 SVG/PNG 导出。",
+      "featureList": [
+        "4 段与 8 段贝塞尔超椭圆近似",
+        "mi 字形与肩部圆角参数调节",
+        "镂空与渐变、棋盘、斜纹、波点、碳纤维纹理填充",
+        "透明背景 SVG 与 PNG 导出",
+        "上传 Logo 生成超椭圆或圆角矩形底板"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "超椭圆和普通圆角矩形有什么区别？",
+          "acceptedAnswer": { "@type": "Answer", "text": "圆角矩形由直线段加四分之一圆弧拼成，曲率在衔接处突变；超椭圆用一条连续曲线 xⁿ+yⁿ=1 描述整个轮廓，过渡更平滑，也就是俗称的 squircle。小米 Logo 用的正是 n=3 的特例。" }
+        },
+        {
+          "@type": "Question",
+          "name": "k = 0.783201402624 是什么？",
+          "acceptedAnswer": { "@type": "Answer", "text": "用四段三次贝塞尔逼近 x³+y³=1 时控制点的比例系数，k = (8·∛0.5 − 4) / 3。取这个值时，每条曲线在 t = 1/2 处精确落在理想超椭圆上。" }
+        },
+        {
+          "@type": "Question",
+          "name": "可以在商业项目里使用生成的小米 Logo 吗？",
+          "acceptedAnswer": { "@type": "Answer", "text": "不建议。本工具只用于几何学习与设计练习，小米商标归小米公司所有，商业使用需要获得授权。你可以上传自己的 Logo，用同一套参数生成属于你的圆角底板。" }
+        }
+      ]
+    }
   ]
 }
 </script>
+<!-- i18n:head:end -->
 <style>
   :root {
     --bg: #f4f4f5;
@@ -188,10 +226,30 @@
   footer { margin-top: 18px; font-size: 11.5px; color: var(--muted); line-height: 1.7; }
   footer a { color: var(--accent); text-decoration: none; }
   footer a:hover { text-decoration: underline; }
+  .lang-banner {
+    display: flex; align-items: center; gap: 14px;
+    margin: -6px 0 18px; padding: 9px 14px;
+    background: var(--accent-soft); border: 1px solid #ffd9bd; border-radius: 12px;
+    font-size: 12.5px; color: var(--accent-ink);
+  }
+  .lang-banner a { color: var(--accent-ink); font-weight: 600; text-decoration: none; }
+  .lang-banner a:hover { text-decoration: underline; }
+  .lang-dismiss {
+    margin-left: auto; border: none; background: transparent; padding: 0 6px;
+    font-size: 17px; line-height: 1; color: var(--accent-ink);
+  }
+  .export-actions { margin-top: 14px; }
   @media (max-width: 920px) {
     .layout { grid-template-columns: 1fr; }
     .preview { max-height: none; }
     .app { padding: 16px 14px 28px; }
+    .export-actions {
+      position: sticky; bottom: 0; z-index: 5;
+      margin: 14px -16px -16px; padding: 10px 16px;
+      background: var(--card); border-top: 1px solid var(--line);
+      border-radius: 0 0 16px 16px;
+    }
+    .export-actions button { flex: 1; }
   }
 </style>
 </head>
@@ -210,6 +268,15 @@
       <button id="reset" class="ghost">恢复默认参数</button>
     </div>
   </header>
+
+  <div id="lang-banner" class="lang-banner" hidden>
+    <span class="lang-globe" aria-hidden="true">🌐</span>
+    <a href="/en/" hreflang="en">English</a>
+    <a href="/ja/" hreflang="ja">日本語</a>
+    <a href="/de/" hreflang="de">Deutsch</a>
+    <a href="/nl/" hreflang="nl">Nederlands</a>
+    <button id="lang-dismiss" class="lang-dismiss" type="button" aria-label="关闭提示">×</button>
+  </div>
 
   <div class="layout">
     <section class="stage">
@@ -362,10 +429,11 @@
             <option value="2048">2048 × 2048</option>
           </select>
         </div>
-        <div class="actions" style="margin-top:14px">
+        <div class="actions export-actions">
           <button id="dl-svg" class="primary">下载 SVG</button>
           <button id="dl-png">下载 PNG</button>
           <button id="view-svg" class="ghost">查看源码</button>
+          <button id="copy-link" class="ghost">复制链接</button>
         </div>
         <p class="hint">导出为透明背景，可直接用于设计稿或网页。</p>
       </section>
@@ -373,7 +441,7 @@
   </div>
 
   <footer>
-    几何参数依据知乎文章《<a href="https://zhuanlan.zhihu.com/p/2075353168960139652" target="_blank" rel="noreferrer">如何画出小米的logo</a>》整理 · 仅用于几何学习与设计练习，小米商标归小米公司所有。
+    几何参数依据知乎文章《<a href="https://zhuanlan.zhihu.com/p/2075353168960139652" target="_blank" rel="noreferrer">如何画出小米的logo</a>》整理 · 仅用于几何学习与设计练习，小米商标归小米公司所有，本站与小米公司无隶属关系。
   </footer>
 </div>
 
@@ -394,6 +462,13 @@
   const VB = 1000;
   const CENTER = 500;
   const SCALE = 470;
+
+  const SUPPORTED = ["zh", "en", "ja", "de", "nl"];
+  const LOCALE = (/[a-z]+/.exec(document.documentElement.lang) || ["en"])[0];
+
+  function track(event) {
+    navigator.sendBeacon(`/collect?e=${event}&l=${LOCALE}`, "");
+  }
 
   // 4 段近似：P1=(k,1)、P2=(1,k)，令 t=1/2 处落在 x³+y³=1 上 ⇒ k=(8∛½−4)/3
   const K4 = (8 * Math.cbrt(0.5) - 4) / 3;
@@ -964,6 +1039,7 @@ ${guides}</svg>`;
   document.getElementById("dl-svg").addEventListener("click", () => {
     const svg = buildSVG({ size: Number(state.exportSize) });
     download("xiaomi-logo.svg", new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
+    track("download_svg");
     toast("SVG 已导出");
   });
 
@@ -985,6 +1061,7 @@ ${guides}</svg>`;
           return;
         }
         download(`xiaomi-logo-${size}.png`, blob);
+        track("download_png");
         toast("PNG 已导出");
       }, "image/png");
     };
@@ -1019,6 +1096,31 @@ ${guides}</svg>`;
   });
 
   render();
+
+  document.getElementById("copy-link").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      track("copy_link");
+      toast("链接已复制");
+    } catch {
+      toast("复制失败，请手动复制地址栏链接");
+    }
+  });
+
+  /* ---------- 语言建议 ---------- */
+
+  const banner = document.getElementById("lang-banner");
+  const nav = (navigator.language || "en").slice(0, 2);
+  const suggested = SUPPORTED.includes(nav) ? nav : "en";
+
+  // 放在 render() 之后：localStorage 在受限模式下会抛错，不能让它拖垮整个工具
+  if (suggested !== LOCALE && !localStorage.getItem("lang-suggestion-off")) {
+    banner.hidden = false;
+  }
+  document.getElementById("lang-dismiss").addEventListener("click", () => {
+    localStorage.setItem("lang-suggestion-off", "1");
+    banner.hidden = true;
+  });
 })();
 </script>
 </body>
